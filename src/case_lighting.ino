@@ -1,21 +1,25 @@
-// color swirl! connect an RGB LED to the PWM pins as indicated
-// in the #defines
-// public domain, enjoy!
+// case lighting!
 
 #define REDPIN    5
 #define GREENPIN  6
-#define BLUEPIN   3
+#define BLUEPIN   10
 #define WHITEPIN  9
 
-#define BUTTONPIN 8
+#define BUTTONPIN 3
 #define LEDPIN    13
 
 #define BKNOB     0
 #define HKNOB     1
 
-#define FADESPEED 5     // make this higher to slow down
+#define WHITE     0
+#define RED       1
+#define GREEN     2
+#define BLUE      3
 
-int buttonState = 0;
+volatile int buttonState = HIGH;  //unpressed
+volatile int previousButtonState = HIGH;
+
+int color = 0;
 
 void setup() {
   pinMode(REDPIN, OUTPUT);
@@ -24,54 +28,64 @@ void setup() {
   pinMode(WHITEPIN, OUTPUT);
   pinMode(BUTTONPIN,INPUT);
   pinMode(LEDPIN,OUTPUT);
+
+  // initialize Timer2
+  cli();          // disable global interrupts
+
+  TCCR2A = 0;
+  TCCR2B = 0;
+  OCR2A =  150; //interrupt every 32ms with 256 prescaler
+  TCCR2A |= (1<<WGM21); // turn on CTC mode
+  TCCR2B |= (1<<CS22) | (1<<CS21); // 256 prescaler
+  TIMSK2 |= (1 << OCIE2A); //enable timer compare interrupt
+
+  sei();          // enable global interrupts
 }
 
 
 void loop() {
   // int r, g, b, w;
 
-  analogWrite(BLUEPIN,0);
-  analogWrite(WHITEPIN, 5);
-  delay(1000);
-  analogWrite(WHITEPIN, 0);
-  analogWrite(REDPIN,5);
-  delay(1000);
-  analogWrite(REDPIN,0);
-  analogWrite(GREENPIN,5);
-  delay(1000);
-  analogWrite(GREENPIN,0);
-  analogWrite(BLUEPIN,5);
-  delay(1000);
+  switch(color){
+    case WHITE:
+      analogWrite(REDPIN,0);
+      analogWrite(GREENPIN,0);
+      analogWrite(BLUEPIN,0);
+      analogWrite(WHITEPIN, 5);
+      break;
+    case RED:
+      analogWrite(GREENPIN,0);
+      analogWrite(BLUEPIN,0);
+      analogWrite(WHITEPIN, 0);
+      analogWrite(REDPIN,5);
+      break;
+    case GREEN:
+      analogWrite(REDPIN,0);
+      analogWrite(BLUEPIN,0);
+      analogWrite(WHITEPIN, 0);
+      analogWrite(GREENPIN,5);
+      break;
+    case BLUE:
+      analogWrite(REDPIN,0);
+      analogWrite(GREENPIN,0);
+      analogWrite(WHITEPIN, 0);
+      analogWrite(BLUEPIN,5);
+      break;
+  }
 
 
-  // fade from blue to violet
-  // for (r = 0; r < 256; r++) {
-  //   analogWrite(REDPIN, r);
-  //   delay(FADESPEED);
-  // }
-  // // fade from violet to red
-  // for (b = 255; b > 0; b--) {
-  //   analogWrite(BLUEPIN, b);
-  //   delay(FADESPEED);
-  // }
-  // // fade from red to yellow
-  // for (g = 0; g < 256; g++) {
-  //   analogWrite(GREENPIN, g);
-  //   delay(FADESPEED);
-  // }
-  // // fade from yellow to green
-  // for (r = 255; r > 0; r--) {
-  //   analogWrite(REDPIN, r);
-  //   delay(FADESPEED);
-  // }
-  // // fade from green to teal
-  // for (b = 0; b < 256; b++) {
-  //   analogWrite(BLUEPIN, b);
-  //   delay(FADESPEED);
-  // }
-  // // fade from teal to blue
-  // for (g = 255; g > 0; g--) {
-  //   analogWrite(GREENPIN, g);
-  //   delay(FADESPEED);
-  // }
+}
+
+ISR(TIMER2_COMPA_vect)
+{
+    buttonState = digitalRead(BUTTONPIN);
+    //button was pressed (went from high->low)
+    if(buttonState == LOW && previousButtonState == HIGH){
+      color++;
+      if(color > 3){
+        color = 0;
+      }
+    }
+    previousButtonState = buttonState;
+
 }
