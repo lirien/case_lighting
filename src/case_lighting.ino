@@ -2,24 +2,28 @@
 
 #define REDPIN    5
 #define GREENPIN  6
-#define BLUEPIN   10
-#define WHITEPIN  9
+#define BLUEPIN   9
+#define WHITEPIN  10
 
 #define BUTTONPIN 3
 #define LEDPIN    13
 
-#define BKNOB     0
-#define HKNOB     1
+#define BKNOB     1 // analog 1
+#define HKNOB     2 // analog 2
 
 #define WHITE     0
-#define RED       1
-#define GREEN     2
-#define BLUE      3
+#define COLOR     1
+#define PULSE     2
+
+#define FADESPEED 5
+
+
 
 volatile int buttonState = HIGH;  //unpressed
 volatile int previousButtonState = HIGH;
 
-int color = 0;
+int mode = 0;
+int hval, bval = 0;
 
 void setup() {
   pinMode(REDPIN, OUTPUT);
@@ -44,34 +48,57 @@ void setup() {
 
 
 void loop() {
-  // int r, g, b, w;
+  int r, g, b, w;
 
-  switch(color){
+  switch(mode){
     case WHITE:
       analogWrite(REDPIN,0);
       analogWrite(GREENPIN,0);
       analogWrite(BLUEPIN,0);
-      analogWrite(WHITEPIN, 5);
+      analogWrite(WHITEPIN, bval);
       break;
-    case RED:
+    case COLOR:
       analogWrite(GREENPIN,0);
       analogWrite(BLUEPIN,0);
       analogWrite(WHITEPIN, 0);
       analogWrite(REDPIN,5);
       break;
-    case GREEN:
-      analogWrite(REDPIN,0);
-      analogWrite(BLUEPIN,0);
-      analogWrite(WHITEPIN, 0);
-      analogWrite(GREENPIN,5);
-      break;
-    case BLUE:
-      analogWrite(REDPIN,0);
-      analogWrite(GREENPIN,0);
-      analogWrite(WHITEPIN, 0);
-      analogWrite(BLUEPIN,5);
+    case PULSE:
+    // fade from blue to violet
+    for (r = 0; r < 256; r++) {
+      analogWrite(REDPIN, r);
+      delay(FADESPEED);
+    }
+    // fade from violet to red
+    for (b = 255; b > 0; b--) {
+      analogWrite(BLUEPIN, b);
+      delay(FADESPEED);
+    }
+    // fade from red to yellow
+    for (g = 0; g < 256; g++) {
+      analogWrite(GREENPIN, g);
+      delay(FADESPEED);
+    }
+    // fade from yellow to green
+    for (r = 255; r > 0; r--) {
+      analogWrite(REDPIN, r);
+      delay(FADESPEED);
+    }
+    // fade from green to teal
+    for (b = 0; b < 256; b++) {
+      analogWrite(BLUEPIN, b);
+      delay(FADESPEED);
+    }
+    // fade from teal to blue
+    for (g = 255; g > 0; g--) {
+      analogWrite(GREENPIN, g);
+      delay(FADESPEED);
+    }
       break;
   }
+
+  hval = analogRead(HKNOB);
+  bval = analogRead(BKNOB) / 10;
 
 
 }
@@ -81,9 +108,9 @@ ISR(TIMER2_COMPA_vect)
     buttonState = digitalRead(BUTTONPIN);
     //button was pressed (went from high->low)
     if(buttonState == LOW && previousButtonState == HIGH){
-      color++;
-      if(color > 3){
-        color = 0;
+      mode++;
+      if(mode > 2){
+        mode = 0;
       }
     }
     previousButtonState = buttonState;
