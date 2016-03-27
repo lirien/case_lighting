@@ -23,7 +23,6 @@ volatile int buttonState = HIGH;  //unpressed
 volatile int previousButtonState = HIGH;
 
 int mode = 0;
-int hval, bval = 0;
 
 void setup() {
   pinMode(REDPIN, OUTPUT);
@@ -48,7 +47,11 @@ void setup() {
 
 
 void loop() {
+  int hval, bval;
   int r, g, b, w;
+
+  bval = analogRead(BKNOB) / 10;
+  hval = analogRead(HKNOB) / 10;
 
   switch(mode){
     case WHITE:
@@ -58,47 +61,50 @@ void loop() {
       analogWrite(WHITEPIN, bval);
       break;
     case COLOR:
-      analogWrite(GREENPIN,0);
+      analogWrite(GREENPIN,hal);
       analogWrite(BLUEPIN,0);
       analogWrite(WHITEPIN, 0);
-      analogWrite(REDPIN,5);
+      analogWrite(REDPIN,0);
       break;
     case PULSE:
     // fade from blue to violet
     for (r = 0; r < 256; r++) {
       analogWrite(REDPIN, r);
       delay(FADESPEED);
+      if(mode != PULSE) break;
     }
     // fade from violet to red
     for (b = 255; b > 0; b--) {
       analogWrite(BLUEPIN, b);
       delay(FADESPEED);
+      if(mode != PULSE) break;
     }
     // fade from red to yellow
     for (g = 0; g < 256; g++) {
       analogWrite(GREENPIN, g);
       delay(FADESPEED);
+      if(mode != PULSE) break;
     }
     // fade from yellow to green
     for (r = 255; r > 0; r--) {
       analogWrite(REDPIN, r);
       delay(FADESPEED);
+      if(mode != PULSE) break;
     }
     // fade from green to teal
     for (b = 0; b < 256; b++) {
       analogWrite(BLUEPIN, b);
       delay(FADESPEED);
+      if(mode != PULSE) break;
     }
     // fade from teal to blue
     for (g = 255; g > 0; g--) {
       analogWrite(GREENPIN, g);
       delay(FADESPEED);
+      if(mode != PULSE) break;
     }
       break;
   }
-
-  hval = analogRead(HKNOB);
-  bval = analogRead(BKNOB) / 10;
 
 
 }
