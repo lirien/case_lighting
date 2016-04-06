@@ -16,7 +16,7 @@
 #define PULSE     2
 
 #define FADESPEED 5
-#define SAT       17
+#define BSCALE    10 // fixed scalar for max brightness
 
 volatile int buttonState = HIGH;  //unpressed
 volatile int previousButtonState = HIGH;
@@ -50,7 +50,7 @@ void loop() {
   int bval, hval, bscale;
   int r, g, b, w;
 
-  bval = analogRead(BKNOB) / 10;
+  bval = analogRead(BKNOB) / BSCALE;
   hval = analogRead(HKNOB);
 
 
@@ -70,37 +70,37 @@ void loop() {
     case PULSE:
     // fade from blue to violet
     for (r = 0; r < 256; r++) {
-      analogWrite(REDPIN, r / 10);
+      analogWrite(REDPIN, r / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
     // fade from violet to red
     for (b = 255; b > 0; b--) {
-      analogWrite(BLUEPIN, b / 10);
+      analogWrite(BLUEPIN, b / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
     // fade from red to yellow
     for (g = 0; g < 256; g++) {
-      analogWrite(GREENPIN, g / 10);
+      analogWrite(GREENPIN, g / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
     // fade from yellow to green
     for (r = 255; r > 0; r--) {
-      analogWrite(REDPIN, r / 10);
+      analogWrite(REDPIN, r / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
     // fade from green to teal
     for (b = 0; b < 256; b++) {
-      analogWrite(BLUEPIN, b / 10);
+      analogWrite(BLUEPIN, b / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
     // fade from teal to blue
     for (g = 255; g > 0; g--) {
-      analogWrite(GREENPIN, g / 10);
+      analogWrite(GREENPIN, g / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
