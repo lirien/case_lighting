@@ -18,6 +18,7 @@
 #define FADESPEED 5
 #define BSCALE    10 // fixed scalar for max brightness
 
+
 volatile int buttonState = HIGH;  //unpressed
 volatile int previousButtonState = HIGH;
 
@@ -48,59 +49,104 @@ void setup() {
 
 void loop() {
   int bval, hval, bscale;
-  int r, g, b, w;
+  int rgbscale;
+  int fr, fg, fb;
 
   bval = analogRead(BKNOB) / BSCALE;
-  hval = analogRead(HKNOB);
+  hval = analogRead(HKNOB) / 8;
+  rgbscale = 42 / bval;
 
 
   switch(mode){
     case WHITE:
-      analogWrite(REDPIN,0);
-      analogWrite(GREENPIN,0);
-      analogWrite(BLUEPIN,0);
+
       analogWrite(WHITEPIN, bval);
       break;
     case COLOR:
-      analogWrite(REDPIN,0);
-      analogWrite(GREENPIN,30);
-      analogWrite(BLUEPIN,30);
-      analogWrite(WHITEPIN, 0);
+      analogWrite(WHITEPIN,0);
+      //blue to violet
+      if(hval < 43){
+        analogWrite(GREENPIN,0);
+        analogWrite(BLUEPIN, bval);
+        // r = hval;
+        analogWrite(REDPIN, hval / rgbscale);
+      }
+
+      //violet to red
+      else if(hval < 85){
+        analogWrite(GREENPIN,0);
+        analogWrite(REDPIN, bval);
+        //b = 85 - hval;
+        analogWrite(BLUEPIN, (85 - hval) / rgbscale);
+      }
+
+      //red to yellow
+      else if(hval < 128){
+        analogWrite(BLUEPIN,0);
+        analogWrite(REDPIN, bval);
+        //g = hval - 85
+        analogWrite(GREENPIN, (hval - 85) / rgbscale);
+      }
+
+      //yellow to green
+      else if(hval < 170){
+        analogWrite(BLUEPIN,0);
+        analogWrite(GREENPIN, bval);
+        //r = 170 - hval;
+        analogWrite(REDPIN, (170 - hval) / rgbscale);
+      }
+
+      //green to teal
+      else if(hval < 213){
+        analogWrite(REDPIN,0);
+        analogWrite(GREENPIN, bval);
+        //b = hval - 170
+        analogWrite(BLUEPIN, (hval - 170) / rgbscale);
+      }
+
+      //teal to blue
+      else{
+        analogWrite(REDPIN,0);
+        analogWrite(BLUEPIN, bval);
+        //g = 255 - hval;
+        analogWrite(GREENPIN, (255 - hval) / rgbscale);
+      }
       break;
+
     case PULSE:
     // fade from blue to violet
-    for (r = 0; r < 256; r++) {
-      analogWrite(REDPIN, r / BSCALE);
+    for (fr = 0; fr < 256; fr++) {
+      analogWrite(REDPIN, fr / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
     // fade from violet to red
-    for (b = 255; b > 0; b--) {
-      analogWrite(BLUEPIN, b / BSCALE);
+    for (fb = 255; fb > 0; fb--) {
+      analogWrite(BLUEPIN, fb / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
     // fade from red to yellow
-    for (g = 0; g < 256; g++) {
-      analogWrite(GREENPIN, g / BSCALE);
+    for (fg = 0; fg < 256; fg++) {
+      analogWrite(GREENPIN, fg / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
     // fade from yellow to green
-    for (r = 255; r > 0; r--) {
-      analogWrite(REDPIN, r / BSCALE);
+    for (fr = 255; fr > 0; fr--) {
+      analogWrite(REDPIN, fr / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
     // fade from green to teal
-    for (b = 0; b < 256; b++) {
-      analogWrite(BLUEPIN, b / BSCALE);
+    for (fb = 0; fb < 256; fb++) {
+      analogWrite(BLUEPIN, fb / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
     // fade from teal to blue
-    for (g = 255; g > 0; g--) {
-      analogWrite(GREENPIN, g / BSCALE);
+    for (fg = 255; fg > 0; fg--) {
+      analogWrite(GREENPIN, fg / BSCALE);
       delay(FADESPEED);
       if(mode != PULSE) break;
     }
