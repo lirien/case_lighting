@@ -53,19 +53,29 @@ void loop() {
   int fr, fg, fb;
 
   bval = analogRead(BKNOB) / BSCALE;
-  hval = analogRead(HKNOB) / 8;
-  rgbscale = 42 / bval;
+  hval = analogRead(HKNOB);
+  rgbscale = 336 / bval;
 
 
   switch(mode){
     case WHITE:
-
+      analogWrite(REDPIN,0);
+      analogWrite(GREENPIN,0);
+      analogWrite(BLUEPIN,0);
       analogWrite(WHITEPIN, bval);
       break;
     case COLOR:
+
       analogWrite(WHITEPIN,0);
+      //off
+      if(bval == 0){
+        analogWrite(REDPIN,0);
+        analogWrite(GREENPIN,0);
+        analogWrite(BLUEPIN,0);
+      }
+
       //blue to violet
-      if(hval < 43){
+      else if(hval < 344){
         analogWrite(GREENPIN,0);
         analogWrite(BLUEPIN, bval);
         // r = hval;
@@ -73,35 +83,35 @@ void loop() {
       }
 
       //violet to red
-      else if(hval < 85){
+      else if(hval < 680){
         analogWrite(GREENPIN,0);
         analogWrite(REDPIN, bval);
         //b = 85 - hval;
-        analogWrite(BLUEPIN, (85 - hval) / rgbscale);
+        analogWrite(BLUEPIN, (680 - hval) / rgbscale);
       }
 
       //red to yellow
-      else if(hval < 128){
+      else if(hval < 1024){
         analogWrite(BLUEPIN,0);
         analogWrite(REDPIN, bval);
         //g = hval - 85
-        analogWrite(GREENPIN, (hval - 85) / rgbscale);
+        analogWrite(GREENPIN, (hval - 680) / rgbscale);
       }
 
       //yellow to green
-      else if(hval < 170){
+      else if(hval < 1360){
         analogWrite(BLUEPIN,0);
         analogWrite(GREENPIN, bval);
         //r = 170 - hval;
-        analogWrite(REDPIN, (170 - hval) / rgbscale);
+        analogWrite(REDPIN, (1360 - hval) / rgbscale);
       }
 
       //green to teal
-      else if(hval < 213){
+      else if(hval < 1704){
         analogWrite(REDPIN,0);
         analogWrite(GREENPIN, bval);
         //b = hval - 170
-        analogWrite(BLUEPIN, (hval - 170) / rgbscale);
+        analogWrite(BLUEPIN, (hval - 1360) / rgbscale);
       }
 
       //teal to blue
@@ -109,7 +119,7 @@ void loop() {
         analogWrite(REDPIN,0);
         analogWrite(BLUEPIN, bval);
         //g = 255 - hval;
-        analogWrite(GREENPIN, (255 - hval) / rgbscale);
+        analogWrite(GREENPIN, (2047 - hval) / rgbscale);
       }
       break;
 
