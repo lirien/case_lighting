@@ -12,9 +12,9 @@
 // #define BKNOB     1 // analog 1
 // #define HKNOB     2 // analog 2
 
-#define RKNOB 1
-#define GKNOB 2
-#define BKNOB 3
+#define HKNOB 1
+#define SKNOB 2
+#define VKNOB 3
 
 #define WHITE     0
 #define COLOR     1
@@ -54,16 +54,19 @@ void setup() {
 
 void loop() {
 
-  int r,g,b;
+  HsvColor hsv;
+  RgbColor rgb;
 
-  r = analogRead(RKNOB) / BSCALE;
-  g = analogRead(GKNOB) / BSCALE;
-  b = analogRead(BKNOB) / BSCALE;
+  hsv.h = analogRead(HKNOB) / 4;
+  hsv.s = analogRead(SKNOB) / 4;
+  hsv.v = analogRead(VKNOB) / 4;
+
+  rgb = HsvToRgb(hsv);
 
   analogWrite(WHITEPIN,0);
-  analogWrite(REDPIN, r);
-  analogWrite(GREENPIN,g);
-  analogWrite(BLUEPIN,b);
+  analogWrite(REDPIN, rgb.r);
+  analogWrite(GREENPIN,rgb.g);
+  analogWrite(BLUEPIN,rgb.b);
 
   // int bval, hval, bscale;
   // int rgbscale;
