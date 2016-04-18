@@ -1,3 +1,5 @@
+//http://blog.saikoled.com/post/44677718712/how-to-convert-from-hsi-to-rgb-white
+
 // This section is modified by the addition of white so that it assumes
 // fully saturated colors, and then scales with white to lower saturation.
 //
