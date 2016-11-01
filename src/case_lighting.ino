@@ -17,7 +17,7 @@ void setup() {
   pinMode(GREENPIN, OUTPUT);
   pinMode(BLUEPIN, OUTPUT);
   pinMode(WHITEPIN, OUTPUT);
-  pinMode(LEDPIN,OUTPUT);
+  pinMode(LEDPIN, OUTPUT);
 }
 
 void loop() {
@@ -28,10 +28,10 @@ void loop() {
   s = (float) analogRead(SKNOB) / 1024.0;
   i = (float) analogRead(IKNOB) / 1024.0;
 
-  hsi2rgbw(h,s,i,&rgbw);
+  hsi2rgbw(h, s, i, &rgbw);
 
   analogWrite(WHITEPIN,rgbw.w);
   analogWrite(REDPIN, rgbw.r);
-  analogWrite(GREENPIN,rgbw.g);
-  analogWrite(BLUEPIN,rgbw.b);
+  analogWrite(GREENPIN, rgbw.g);
+  analogWrite(BLUEPIN, rgbw.b);
 }
